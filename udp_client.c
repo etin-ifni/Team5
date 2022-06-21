@@ -5,7 +5,7 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 
-#define SERVER_PORT 5000
+#define SERVER_PORT 5051
 
 int main()
 {
@@ -19,19 +19,20 @@ int main()
 	while(1){
 		//从控制台输入聊天信息
 		printf("输入向服务器发送的信息:\n"); 
+		scanf("%s",msg);
 		//2 发送客户端请求
-		//将字串返回给client 端
+		//将字串返回给client�?
 		bzero(&addr, sizeof(addr));
 		addr.sin_family = AF_INET;
-		addr.sin_port = htons(SERVER_PORT);//服务器端口
-		addr.sin_addr.s_addr = inet_addr("192.168.43.116"); //服务器IP
+		addr.sin_port = htons(SERVER_PORT);//服务器端�?
+		addr.sin_addr.s_addr = inet_addr("127.0.0.1"); //服务器IP
 	
 		sendto(sock, msg, strlen(msg), 0, (struct sockaddr *)&addr, addrlen);
 	
-		//3 接收服务器应答
+		//3 接收服务器应�?
 		//recvfrom();
 		recvfrom(sock,buf,sizeof(buf),0,(struct sockaddr *) &addr, &addrlen);
-		printf("服务器应答: %s\n",buf); 
+		printf("服务器应�? %s\n",buf); 
 	}
 	
 	return 0;
