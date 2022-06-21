@@ -1,30 +1,39 @@
 #include <stdio.h>
-#include <sys/types.h>
+#include<string.h>
+#include <sys/types.h>  
 #include <sys/socket.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
 
-#define SERVER_PORT 5000  //·şÎñÆ÷µÄ¶Ë¿ÚºÅ£¨×Ô¶¨Òå£©
+#define SERVER_PORT 5000
 
 int main()
 {
 	int sock = 0;
-	struct sockaddr_in_addr; //·şÎñÆ÷µÄÍøÂçµØÖ·
-	char msg[] = "Hello server";
-	//´´½¨UDP socket
+	struct sockaddr_in addr;//æœåŠ¡å™¨ç½‘ç»œåœ°å€
+	int addrlen = sizeof(addr);
+	char msg[64] = {0};
+	char buf[64] = {0};
+	//1 åˆ›å»ºUDP socket
 	sock = socket(AF_INET,SOCK_DGRAM,0);
+	while(1){
+		//ä»æ§åˆ¶å°è¾“å…¥èŠå¤©ä¿¡æ¯
+		printf("è¾“å…¥å‘æœåŠ¡å™¨å‘é€çš„ä¿¡æ¯:\n"); 
+		//2 å‘é€å®¢æˆ·ç«¯è¯·æ±‚
+		//å°†å­—ä¸²è¿”å›ç»™client ç«¯
+		bzero(&addr, sizeof(addr));
+		addr.sin_family = AF_INET;
+		addr.sin_port = htons(SERVER_PORT);//æœåŠ¡å™¨ç«¯å£
+		addr.sin_addr.s_addr = inet_addr("192.168.43.116"); //æœåŠ¡å™¨IP
 	
-	//·¢ËÍ¿Í»§¶ËÇëÇó
-	bzeri($addr,sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(SERVER_PORT);//·şÎñÆ÷¶Ë¿Ú
-	addr.sin_addr.s_addr = inet_addr("·şÎñÆ÷IPµØÖ·");//·şÎñÆ÷IP
-	sendto(sock,mag,strlen(msg),0,#addr,addr_len);
+		sendto(sock, msg, strlen(msg), 0, (struct sockaddr *)&addr, addrlen);
 	
-	//½ÓÊÕ·şÎñÆ÷Ó¦´ğ
-	recvfrom(sock,buf,sizeof(buf),0,(struct sockaddr *)&addr,addrlen);
-	printf("·şÎñÆ÷Ó¦´ğ:%s\n",buf);
+		//3 æ¥æ”¶æœåŠ¡å™¨åº”ç­”
+		//recvfrom();
+		recvfrom(sock,buf,sizeof(buf),0,(struct sockaddr *) &addr, &addrlen);
+		printf("æœåŠ¡å™¨åº”ç­”: %s\n",buf); 
+	}
 	
 	return 0;
+	
 }

@@ -1,47 +1,42 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include<stdio.h>
+#include<string.h>
+#include<netinet/in.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<arpa/inet.h>
 
-#define MYPORT 5000  //¶Ë¿ÚºÅ£¨×Ô¶¨Òå£©
-
-int main ()
+#define MYPORT 5000
+int main()
 {
 	int sock = 0;
-	struct sockaddr_in_my_addr;
-	cha msg[] = "Hello client";
-	//´´½¨UDP socket
+	struct sockaddr_in my_addr,cl_addr;
+	int addrlen = sizeof(cl_addr);
+	char buf[64] = {0};
+	char msg[64] = {0};
+	//1 åˆ›å»ºUDP socket
 	sock = socket(AF_INET,SOCK_DGRAM,0);
-	if(sock == -1){
-		peeror("socket");//¼ì²éÊÇ·ñÕı³£³õÊ¼»¯socket
-		exit(EXIT_FAILURE);
-		
-		return -1;
+	if (sock == -1) { //æ£€æŸ¥æ˜¯å¦æ­£å¸¸åˆå§‹åŒ–socket
+        printf("socket failed!\n");
+        return -1;
+    }
+	while(1){
+		//ä»æ§åˆ¶å°è¾“å…¥èŠå¤©ä¿¡æ¯
+		//printf("è¾“å…¥å‘å®¢æˆ·ç«¯å‘é€çš„ä¿¡æ¯:\n"); 
+		//2 ç»‘å®šipåœ°å€ä¸ç«¯å£å·
+		bzero(&my_addr, sizeof(my_addr));
+		my_addr.sin_family = AF_INET; //åœ°å€ç»“æ„çš„åè®®æ—
+		my_addr.sin_port = htons(MYPORT); //åœ°å€ç»“æ„çš„ç«¯å£åœ°å€ï¼Œç½‘ç»œå­—èŠ‚åº
+		my_addr.sin_addr.s_addr = INADDR_ANY;//æœåŠ¡å™¨IPåœ°å€
+		if (bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1) { // åˆ¤æ–­æ˜¯å¦ç»‘å®šæˆåŠŸ
+			printf("bind failed!\n");
+			return -1;
+		}
+		//3 æ¥æ”¶å®¢æˆ·ç«¯è¯·æ±‚
+		recvfrom(sock,buf,sizeof(buf),0,(struct sockaddr *)&cl_addr, &addrlen);
+		printf("å®¢æˆ·ç«¯è¯·æ±‚: %s",buf);
+	
+		//4 å‘é€æœåŠ¡å™¨åº”ç­”
+		sendto(sock,msg,strlen(msg),0,(struct sockaddr *)&cl_addr, sizeof(cl_addr));
 	}
-	
-	//°ó¶¨IPµØÖ·Óë¶Ë¿ÚºÅ
-	bzero(&my_addr, sizeof(my_addr));
-	my_addr.sin_family = AF_INET;//µØÖ·½á¹¹µÄĞ­Òé×å
-	my_addr.sin_port = htons(MYPORT);//µØÖ·½á¹¹µÄ¶Ë¿ÚµØÖ·£¬ÍøÂç×Ö½ÚĞò
-	my_addr.sin_addr = htonl(INADDR_ANY);//·şÎñÆ÷IPµØÖ·
-	
-	if (bind(sock, (struct sockaddr *) &my_addr,sizeof(struct sockaddr)) == -1)
-	{
-		perror("bind");
-		exit(EXIT_FAILURE);
-		
-		return -1;
-	}
-	
-	//½ÓÊÕ¿Í»§¶ËÇëÇó
-	recvfrom(sock,buf,sizeof(buf),0,(struct sockaddr *)&cl_addr,&addrlen);
-	printf("¿Í»§¶ËÇëÇó:%s",buf);
-	
-	
-	//·¢ËÍ·şÎñÆ÷Ó¦´ğ
-	sendto(sock,msg,strlen(msg),0,(struct sockaddr *)&cl_addr,sizeof(cl_addr));
-	
 	return 0;
 }
